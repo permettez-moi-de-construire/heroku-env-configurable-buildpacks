@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo ".buildpacks env"
+exit 0
