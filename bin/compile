@@ -1,30 +1,28 @@
 #!/usr/bin/env bash
 
-indent() {
-  sed -u 's/^/      /'
-}
-
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo $3
-echo $ENV_DIR
-
 SUB_BUILDPACKS=$(cat ${ENV_DIR}/SUB_BUILDPACKS)
-
-echo $SUB_BUILDPACKS
+DELIMITER_ENV=$(cat ${ENV_DIR}/SUB_BUILDPACKS_DELIMITER)
+DELIMITER=${DELIMITER_ENV:-"\n"}
 
 if [[ -z "${SUB_BUILDPACKS}" ]]; then
-  echo "Variable SUB_BUILDPACKS must be set" | indent
+  echo "Variable SUB_BUILDPACKS must be set"
   exit 1
 fi
 
-echo ${SUB_BUILDPACKS} | tr ' ' '\n' > ${BUILD_DIR}/.buildpacks
+if [ "${DELIMITER}" = "\n" ]; then
+  echo "${SUB_BUILDPACKS}" > ${BUILD_DIR}/.buildpacks
+else
+  echo "${SUB_BUILDPACKS}" | tr "${DELIMITER}" "\n" > ${BUILD_DIR}/.buildpacks
+fi
+
 
 if ! [ $? ]; then
-  echo "Failed to export .buildpacks folder" | indent
+  echo "Failed to export .buildpacks file"
   exit 1
 fi
 
-echo "${BUILD_DIR}/.buildpacks generated successfully" | indent
+echo "${BUILD_DIR}/.buildpacks generated successfully"
